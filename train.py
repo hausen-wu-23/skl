@@ -20,8 +20,10 @@ def loadImg(i, dir):
     img = imutils.resize(img, width = 32)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
-    edged = cv2.Canny(blurred, 20, 80)
-    data = np.reshape(edged, (32*32))  
+    T= mh.thresholding.otsu(blurred)
+    gray[gray>T] = 255
+    gray[gray<255] = 0
+    data = np.reshape(gray, (32*32))  
     return data
 
 def main():
@@ -56,18 +58,21 @@ def main():
         trainX[cur_index] = loadImg(i, dir)
         trainY[cur_index] = 0
         cur_index += 1
+        print('\rProcessed %s%% of the image.' % int((cur_index/2520)*100), end='')
     
     for i in range(len(train_rock)):
         dir = train_dir + '/rock/' + train_rock[i]
         trainX[cur_index] = loadImg(i, dir)
         trainY[cur_index] = 1
         cur_index += 1
+        print('\rProcessed %s%% of the image.' % int((cur_index/2520)*100), end='')
 
     for i in range(len(train_rock)):
         dir = train_dir + '/scissors/' + train_scissors[i]
         trainX[cur_index] = loadImg(i, dir)
         trainY[cur_index] = 2
         cur_index += 1
+        print('\rProcessed %s%% of the image.' % int((cur_index/2520)*100), end='')
 
     trainY = np.reshape(trainY, (2520))
     # cv2.imshow(str(trainY[837]), np.reshape(trainX[837], (32, 32)))
@@ -85,18 +90,21 @@ def main():
         testX[cur_index] = loadImg(i, dir)
         testY[cur_index] = 0
         cur_index += 1
+        print('\r%s' % cur_index, end='')
     
     for i in range(len(test_rock)):
         dir = test_dir + '/rock/' + test_rock[i]
         testX[cur_index] = loadImg(i, dir)
         testY[cur_index] = 1
         cur_index += 1
+        print('\r%s' % cur_index, end='')
 
     for i in range(len(test_rock)):
         dir = test_dir + '/scissors/' + test_scissors[i]
         testX[cur_index] = loadImg(i, dir)
         testY[cur_index] = 2
         cur_index += 1
+        print('\r%s' % cur_index, end='')
 
     testY = np.reshape(testY, (372))
     # cv2.destroyAllWindows()
@@ -104,7 +112,7 @@ def main():
 
     # cv2.waitKey(0)
 
-    classifier = LogisticRegression()
+    classifier = LogisticRegression(max_iter=10000)
     classifier.fit(trainX, trainY)
     preds = classifier.predict(testX)
 
@@ -113,7 +121,7 @@ def main():
     for pred, gt in zip(preds, testY):
         if pred == gt: correct += 1
         else: incorrect += 1
-    print(f"Correct: {correct}, Incorrect: {incorrect}, % Correct: {correct/(correct + incorrect): 5.2}")
+    print(f'Correct: {correct}, Incorrect: {incorrect}, % Correct: {correct/(correct + incorrect): 5.2}')
 
     plot_confusion_matrix(classifier, testX, testY)
     pyplot.show()
