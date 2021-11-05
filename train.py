@@ -1,9 +1,10 @@
 from numpy.core.fromnumeric import size
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.metrics import plot_confusion_matrix
+from sklearn.svm import LinearSVC
 import numpy as np
 import pandas as pd
-import matplotlib as plt
+from matplotlib import pyplot
 import os
 import random
 import cv2
@@ -16,11 +17,11 @@ test_dir = './rock-paper-scissor/rps-test-set/rps-test-set'
 
 def loadImg(i, dir):
     img = cv2.imread(dir)
-    img = imutils.resize(img, width = 64)
+    img = imutils.resize(img, width = 32)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
     edged = cv2.Canny(blurred, 20, 80)
-    data = np.reshape(edged, (64*64))  
+    data = np.reshape(edged, (32*32))  
     return data
 
 def main():
@@ -45,7 +46,7 @@ def main():
     # paper 0 rock 1 scissors 2
 
     # importing the images
-    trainX = np.ndarray(shape = (2520,64*64), dtype=np.uint8)
+    trainX = np.ndarray(shape = (2520,32*32), dtype=np.uint8)
     trainY = np.ndarray(shape = (2520, 1), dtype=np.uint8)
     
     # processing image
@@ -69,12 +70,12 @@ def main():
         cur_index += 1
 
     trainY = np.reshape(trainY, (2520))
-    cv2.imshow(str(trainY[837]), np.reshape(trainX[837], (64, 64)))
+    # cv2.imshow(str(trainY[837]), np.reshape(trainX[837], (32, 32)))
 
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
     # test data
     # importing the images
-    testX = np.ndarray(shape = (372,64*64), dtype=np.uint8)
+    testX = np.ndarray(shape = (372,32*32), dtype=np.uint8)
     testY = np.ndarray(shape = (372, 1), dtype=np.uint8)
     
     cur_index = 0
@@ -98,10 +99,24 @@ def main():
         cur_index += 1
 
     testY = np.reshape(testY, (372))
-    cv2.destroyAllWindows()
-    cv2.imshow(str(testY[370]), np.reshape(testX[370], (64, 64)))
+    # cv2.destroyAllWindows()
+    # cv2.imshow(str(testY[370]), np.reshape(testX[370], (32, 32)))
 
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
+
+    classifier = LogisticRegression()
+    classifier.fit(trainX, trainY)
+    preds = classifier.predict(testX)
+
+    correct = 0
+    incorrect = 0
+    for pred, gt in zip(preds, testY):
+        if pred == gt: correct += 1
+        else: incorrect += 1
+    print(f"Correct: {correct}, Incorrect: {incorrect}, % Correct: {correct/(correct + incorrect): 5.2}")
+
+    plot_confusion_matrix(classifier, testX, testY)
+    pyplot.show()
 
 
 if __name__ == '__main__':
