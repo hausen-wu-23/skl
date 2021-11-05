@@ -34,6 +34,7 @@ def main():
     test_paper = os.listdir(test_dir + '/paper')
     test_scissors = os.listdir(test_dir + '/scissors')
 
+
     # # show random sample data
     # x = random.randint(0, len(train_rock))
     # cv2.imshow('rock', cv2.imread(train_dir + '/rock/' + train_rock[x]))
@@ -44,27 +45,62 @@ def main():
     # paper 0 rock 1 scissors 2
 
     # importing the images
-    trainX = np.ndarray(shape = (840*3,64*64), dtype=np.uint8)
-    trainY = np.ndarray(shape = (840*3, 1), dtype=np.uint8)
+    trainX = np.ndarray(shape = (2520,64*64), dtype=np.uint8)
+    trainY = np.ndarray(shape = (2520, 1), dtype=np.uint8)
     
     # processing image
+    cur_index = 0
     for i in range(len(train_paper)):
         dir = train_dir + '/paper/' + train_paper[i]
-        trainX[i] = loadImg(i, dir)
-        trainY[i] = 0
+        trainX[cur_index] = loadImg(i, dir)
+        trainY[cur_index] = 0
+        cur_index += 1
     
     for i in range(len(train_rock)):
         dir = train_dir + '/rock/' + train_rock[i]
-        trainX[i] = loadImg(i, dir)
-        trainY[i] = 1
+        trainX[cur_index] = loadImg(i, dir)
+        trainY[cur_index] = 1
+        cur_index += 1
 
     for i in range(len(train_rock)):
         dir = train_dir + '/scissors/' + train_scissors[i]
-        trainX[i] = loadImg(i, dir)
-        trainY[i] = 2
+        trainX[cur_index] = loadImg(i, dir)
+        trainY[cur_index] = 2
+        cur_index += 1
 
-    trainY = np.reshape(trainY, (840*3))
+    trainY = np.reshape(trainY, (2520))
     cv2.imshow(str(trainY[837]), np.reshape(trainX[837], (64, 64)))
+
+    cv2.waitKey(0)
+    # test data
+    # importing the images
+    testX = np.ndarray(shape = (372,64*64), dtype=np.uint8)
+    testY = np.ndarray(shape = (372, 1), dtype=np.uint8)
+    
+    cur_index = 0
+    # processing image
+    for i in range(len(test_paper)):
+        dir = test_dir + '/paper/' + test_paper[i]
+        testX[cur_index] = loadImg(i, dir)
+        testY[cur_index] = 0
+        cur_index += 1
+    
+    for i in range(len(test_rock)):
+        dir = test_dir + '/rock/' + test_rock[i]
+        testX[cur_index] = loadImg(i, dir)
+        testY[cur_index] = 1
+        cur_index += 1
+
+    for i in range(len(test_rock)):
+        dir = test_dir + '/scissors/' + test_scissors[i]
+        testX[cur_index] = loadImg(i, dir)
+        testY[cur_index] = 2
+        cur_index += 1
+
+    testY = np.reshape(testY, (372))
+    cv2.destroyAllWindows()
+    cv2.imshow(str(testY[370]), np.reshape(testX[370], (64, 64)))
+
     cv2.waitKey(0)
 
 
