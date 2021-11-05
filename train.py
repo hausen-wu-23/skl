@@ -15,7 +15,7 @@ import imutils
 train_dir = './rock-paper-scissor/rps/rps'
 test_dir = './rock-paper-scissor/rps-test-set/rps-test-set'
 
-def loadImg(i, dir):
+def loadImg(dir):
     img = cv2.imread(dir)
     img = imutils.resize(img, width = 32)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -38,14 +38,14 @@ def main():
     test_scissors = os.listdir(test_dir + '/scissors')
 
 
-    # # show random sample data
-    # x = random.randint(0, len(train_rock))
-    # cv2.imshow('rock', cv2.imread(train_dir + '/rock/' + train_rock[x]))
-    # cv2.imshow('paper', cv2.imread(train_dir + '/paper/' + train_paper[x]))
-    # cv2.imshow('scissors', cv2.imread(train_dir + '/scissors/' + train_scissors[x]))
-    # cv2.waitKey(0)
+    # show random sample data
+    x = random.randint(0, len(train_rock))
+    cv2.imshow('rock', cv2.imread(train_dir + '/rock/' + train_rock[x]))
+    cv2.imshow('paper', cv2.imread(train_dir + '/paper/' + train_paper[x]))
+    cv2.imshow('scissors', cv2.imread(train_dir + '/scissors/' + train_scissors[x]))
+    cv2.waitKey(0)
 
-    # paper 0 rock 1 scissors 2
+    # label: paper 0 rock 1 scissors 2
 
     # importing the images
     trainX = np.ndarray(shape = (2520,32*32), dtype=np.uint8)
@@ -55,29 +55,27 @@ def main():
     cur_index = 0
     for i in range(len(train_paper)):
         dir = train_dir + '/paper/' + train_paper[i]
-        trainX[cur_index] = loadImg(i, dir)
+        trainX[cur_index] = loadImg(dir)
         trainY[cur_index] = 0
         cur_index += 1
-        print('\rProcessed %s%% of the image.' % int((cur_index/2520)*100), end='')
+        print('\rProcessed %s%% of the train set.' % int((cur_index/2520)*100), end='')
     
     for i in range(len(train_rock)):
         dir = train_dir + '/rock/' + train_rock[i]
-        trainX[cur_index] = loadImg(i, dir)
+        trainX[cur_index] = loadImg(dir)
         trainY[cur_index] = 1
         cur_index += 1
-        print('\rProcessed %s%% of the image.' % int((cur_index/2520)*100), end='')
+        print('\rProcessed %s%% of the train set.' % int((cur_index/2520)*100), end='')
 
     for i in range(len(train_rock)):
         dir = train_dir + '/scissors/' + train_scissors[i]
-        trainX[cur_index] = loadImg(i, dir)
+        trainX[cur_index] = loadImg(dir)
         trainY[cur_index] = 2
         cur_index += 1
-        print('\rProcessed %s%% of the image.' % int((cur_index/2520)*100), end='')
-
+        print('\rProcessed %s%% of the train set.' % int((cur_index/2520)*100), end='')
     trainY = np.reshape(trainY, (2520))
-    # cv2.imshow(str(trainY[837]), np.reshape(trainX[837], (32, 32)))
+    print('\nFinished processing train set.')
 
-    # cv2.waitKey(0)
     # test data
     # importing the images
     testX = np.ndarray(shape = (372,32*32), dtype=np.uint8)
@@ -87,31 +85,28 @@ def main():
     # processing image
     for i in range(len(test_paper)):
         dir = test_dir + '/paper/' + test_paper[i]
-        testX[cur_index] = loadImg(i, dir)
+        testX[cur_index] = loadImg(dir)
         testY[cur_index] = 0
         cur_index += 1
-        print('\r%s' % cur_index, end='')
+        print('\rProcessed %s%% of the test set.' % int((cur_index/372)*100), end='')
     
     for i in range(len(test_rock)):
         dir = test_dir + '/rock/' + test_rock[i]
-        testX[cur_index] = loadImg(i, dir)
+        testX[cur_index] = loadImg(dir)
         testY[cur_index] = 1
         cur_index += 1
-        print('\r%s' % cur_index, end='')
+        print('\rProcessed %s%% of the test set.' % int((cur_index/372)*100), end='')
 
     for i in range(len(test_rock)):
         dir = test_dir + '/scissors/' + test_scissors[i]
-        testX[cur_index] = loadImg(i, dir)
+        testX[cur_index] = loadImg(dir)
         testY[cur_index] = 2
         cur_index += 1
-        print('\r%s' % cur_index, end='')
-
+        print('\rProcessed %s%% of the test set.' % int((cur_index/372)*100), end='')
     testY = np.reshape(testY, (372))
-    # cv2.destroyAllWindows()
-    # cv2.imshow(str(testY[370]), np.reshape(testX[370], (32, 32)))
+    print('\nFinished processing test set.')
 
-    # cv2.waitKey(0)
-
+    print('start training')
     classifier = LogisticRegression(max_iter=10000)
     classifier.fit(trainX, trainY)
     preds = classifier.predict(testX)
