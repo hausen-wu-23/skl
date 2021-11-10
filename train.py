@@ -1,7 +1,7 @@
 from numpy.core.fromnumeric import size
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.metrics import plot_confusion_matrix
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot
@@ -17,13 +17,16 @@ test_dir = './rock-paper-scissor/rps-test-set/rps-test-set'
 
 def loadImg(dir):
     img = cv2.imread(dir)
-    img = imutils.resize(img, width = 32)
+    img = imutils.resize(img, width = 128)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+
+    
+
     T= mh.thresholding.otsu(blurred)
     gray[gray>T] = 255
     gray[gray<255] = 0
-    data = np.reshape(gray, (32*32))  
+    data = np.reshape(gray, (128*128))  
     return data
 
 def main():
@@ -48,7 +51,7 @@ def main():
     # label: paper 0 rock 1 scissors 2
 
     # importing the images
-    trainX = np.ndarray(shape = (2520,32*32), dtype=np.uint8)
+    trainX = np.ndarray(shape = (2520,128*128), dtype=np.uint8)
     trainY = np.ndarray(shape = (2520, 1), dtype=np.uint8)
     
     # processing image
@@ -78,7 +81,7 @@ def main():
 
     # test data
     # importing the images
-    testX = np.ndarray(shape = (372,32*32), dtype=np.uint8)
+    testX = np.ndarray(shape = (372,128*128), dtype=np.uint8)
     testY = np.ndarray(shape = (372, 1), dtype=np.uint8)
     
     cur_index = 0
@@ -106,8 +109,8 @@ def main():
     testY = np.reshape(testY, (372))
     print('\nFinished processing test set.')
 
-    print('start training')
-    classifier = LogisticRegression(max_iter=10000)
+    print('start training...')
+    classifier = SVC(max_iter=10000)
     classifier.fit(trainX, trainY)
     preds = classifier.predict(testX)
 
