@@ -1,12 +1,15 @@
 from numpy.core.fromnumeric import size
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import plot_confusion_matrix
+import joblib
 from sklearn.svm import SVC
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot
 import os
 import random
+import seaborn as sns
 import cv2
 import mahotas as mh
 import imutils
@@ -20,8 +23,6 @@ def loadImg(dir):
     img = imutils.resize(img, width = 128)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
-
-    
 
     T= mh.thresholding.otsu(blurred)
     gray[gray>T] = 255
@@ -109,8 +110,10 @@ def main():
     testY = np.reshape(testY, (372))
     print('\nFinished processing test set.')
 
+    pyplot.show()
+
     print('start training...')
-    classifier = SVC(max_iter=10000)
+    classifier = MLPClassifier(hidden_layer_sizes=(256,128,64,32), activation="relu", random_state=1, max_iter=10000)
     classifier.fit(trainX, trainY)
     preds = classifier.predict(testX)
 
@@ -124,6 +127,8 @@ def main():
     plot_confusion_matrix(classifier, testX, testY)
     pyplot.show()
 
+    joblib_file = 'model.pkl'
+    joblib.dump(classifier, joblib_file)
 
 if __name__ == '__main__':
     main()
