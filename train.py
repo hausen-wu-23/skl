@@ -1,11 +1,8 @@
 from numpy.core.fromnumeric import size
-from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import plot_confusion_matrix
 import joblib
-from sklearn.svm import SVC
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot
 import os
 import random
@@ -18,6 +15,7 @@ import imutils
 train_dir = './rock-paper-scissor/rps/rps'
 test_dir = './rock-paper-scissor/rps-test-set/rps-test-set'
 
+# function loads the image and rescale and thresholds it for maximum accuracy
 def loadImg(dir):
     img = cv2.imread(dir)
     img = imutils.resize(img, width = 128)
@@ -51,11 +49,11 @@ def main():
 
     # label: paper 0 rock 1 scissors 2
 
-    # importing the images
+    # processing image for train set
     trainX = np.ndarray(shape = (2520,128*128), dtype=np.uint8)
     trainY = np.ndarray(shape = (2520, 1), dtype=np.uint8)
-    
-    # processing image
+
+    # index of the the current importing images index 
     cur_index = 0
     for i in range(len(train_paper)):
         dir = train_dir + '/paper/' + train_paper[i]
@@ -80,13 +78,13 @@ def main():
     trainY = np.reshape(trainY, (2520))
     print('\nFinished processing train set.')
 
-    # test data
-    # importing the images
+    # importing image to create the test set
     testX = np.ndarray(shape = (372,128*128), dtype=np.uint8)
     testY = np.ndarray(shape = (372, 1), dtype=np.uint8)
     
+    # index of the the current importing images index 
     cur_index = 0
-    # processing image
+
     for i in range(len(test_paper)):
         dir = test_dir + '/paper/' + test_paper[i]
         testX[cur_index] = loadImg(dir)
@@ -110,13 +108,13 @@ def main():
     testY = np.reshape(testY, (372))
     print('\nFinished processing test set.')
 
-    pyplot.show()
-
     print('start training...')
+    # using MLP for the highest accuracy
     classifier = MLPClassifier(hidden_layer_sizes=(256,128,64,32), activation="relu", random_state=1, max_iter=10000)
     classifier.fit(trainX, trainY)
     preds = classifier.predict(testX)
 
+    # validation of the accuracy of the model
     correct = 0
     incorrect = 0
     for pred, gt in zip(preds, testY):
@@ -127,6 +125,7 @@ def main():
     plot_confusion_matrix(classifier, testX, testY)
     pyplot.show()
 
+    # saving the model
     joblib_file = 'model.pkl'
     joblib.dump(classifier, joblib_file)
 
