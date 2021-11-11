@@ -1,4 +1,4 @@
-from numpy.core.fromnumeric import size
+# dataset: https://www.kaggle.com/frtgnn/rock-paper-scissor
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import plot_confusion_matrix
 import joblib
