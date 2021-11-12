@@ -1,4 +1,5 @@
 # dataset: https://www.kaggle.com/frtgnn/rock-paper-scissor
+from time import time
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import plot_confusion_matrix
 import joblib
@@ -10,6 +11,7 @@ import seaborn as sns
 import cv2
 import mahotas as mh
 import imutils
+import datetime
 
 # directory of training data
 train_dir = './rock-paper-scissor/rps/rps'
@@ -109,10 +111,14 @@ def main():
     print('\nFinished processing test set.')
 
     print('start training...')
+
+    start = time()
     # using MLP for the highest accuracy
     classifier = MLPClassifier(hidden_layer_sizes=(256,128,64,32), activation="relu", random_state=1, max_iter=10000)
     classifier.fit(trainX, trainY)
     preds = classifier.predict(testX)
+
+    end = int(time() - start)
 
     # validation of the accuracy of the model
     correct = 0
@@ -120,7 +126,7 @@ def main():
     for pred, gt in zip(preds, testY):
         if pred == gt: correct += 1
         else: incorrect += 1
-    print(f'Correct: {correct}, Incorrect: {incorrect}, % Correct: {correct/(correct + incorrect): 5.2}')
+    print(f'Completed in {end} seconds, Correct: {correct}, Incorrect: {incorrect}, % Correct: {correct/(correct + incorrect): 5.2}')
 
     plot_confusion_matrix(classifier, testX, testY)
     pyplot.show()
