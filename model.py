@@ -1,6 +1,6 @@
 
 import cv2
-import imutils
+import imutil
 import mahotas as mh
 import numpy as np
 import argparse
@@ -9,7 +9,7 @@ import joblib
 # function loads the image and rescale and thresholds it for maximum accuracy
 def loadImg(dir):
     img = cv2.imread(dir)
-    img = imutils.resize(img, width = 128, height = 128)
+    img = imutil.resize(img, width = 128, height = 128)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
 

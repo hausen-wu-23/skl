@@ -10,7 +10,7 @@ import random
 import seaborn as sns
 import cv2
 import mahotas as mh
-import imutils
+import imutil
 import datetime
 
 # directory of training data
@@ -20,7 +20,7 @@ test_dir = './rock-paper-scissor/rps-test-set/rps-test-set'
 # function loads the image and rescale and thresholds it for maximum accuracy
 def loadImg(dir):
     img = cv2.imread(dir)
-    img = imutils.resize(img, width = 128)
+    img = imutil.resize(img, width = 128)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
 
