@@ -7,6 +7,7 @@ import numpy as np
 
 
 def main():
+    # load model
     model = joblib.load('model.pkl')
     
     mirror=True
@@ -14,10 +15,18 @@ def main():
     
     pTime = 0
     while True:
+        # read webcam
         ret_val, img = cam.read()
+
+        # resize original image for displaying
         display = imutil.resize(img.copy(), width = 128, height = 128)
+
+        # flip image if mirrored
         if mirror: 
             img = cv2.flip(img, 1)
+
+        # resize image for processing
+        # process image like in trainset
         img = imutil.resize(img, width = 128, height = 128)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (3, 3), 0)
@@ -43,7 +52,7 @@ def main():
         fps = 1 / (cTime - pTime)
         pTime = cTime
         cv2.putText(display, f'FPS:{int(fps)}', (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
-        
+
         # show the results on the image and display
         cv2.putText(display, f, (46, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), thickness= 1)
 
